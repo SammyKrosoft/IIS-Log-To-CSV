@@ -13,6 +13,11 @@ Foreach-Object {
     "Starting " + $inFile
     $outFile =  $_.FullName -replace "\.log",".csv"
     $cmd = "SELECT date, time, s-ip, cs-method, cs-uri-stem, cs-uri-query, s-port, cs-username, c-ip, cs(User-Agent) as cs-user-agent, sc-status, sc-substatus, sc-win32-status,sc-bytes,cs-bytes, time-taken INTO '"+$outFile+"' FROM '"+$inFile+"'"
+    # on Windows 2016 with Exchange 2016 installed, I have the below fields::
+    # Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) sc-status sc-substatus sc-win32-status time-taken
+    # on CSV it's:
+    # date, time, s-ip, cs-method, cs-uri-stem, cs-uri-query, s-port, cs-username, c-ip, cs(User-Agent), sc-status, sc-substatus, sc-win32-status, time-taken, cs(Referer)
+    
     
     $output =  & $pathToLogParserExe -i:W3C -o:csv $cmd | Out-String
     
