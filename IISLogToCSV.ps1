@@ -98,8 +98,8 @@ function Write-Log
             if ($Error){
                 Write-Host $Message -ForegroundColor Red}
             } Else {
-                Write-Host $Message -ForegroundColor Green}
-            }   
+                Write-Host $Message -ForegroundColor Green
+            }  
 	}
 	catch
 	{
@@ -137,7 +137,7 @@ function Show-OpenFileDialog {
     #>
     
         param
-        ($Title = 'Select a file to use', $Filter = 'Comma Separated|*.csv|Text|*.txt',$InitialDirectory = "c:\temp")
+        ($Title = 'Select a file to use', $Filter = 'Log file|*.log|Text|*.txt',$InitialDirectory = "c:\temp")
         
         Add-Type -AssemblyName PresentationFramework
     
@@ -161,18 +161,18 @@ function Show-OpenFileDialog {
 Write-Log "************************** Script Start **************************"
 ################################# Input ###########################################
 
-$inputFile = Show-OpenFileDialog
+$inputFile = Show-OpenFileDialog -InitialDirectory "C:\Users\sammy\Downloads\logms\inetpub\logs\LogFiles\W3SVC1"
+if([string]::IsNullOrEmpty($inputFile)){write-host "Didn't select any file";Exit}
 
 ########################### Check if Logparser is on the default installation folder ################################
 
 If (!(Test-File $pathToLogParserExe)){
-    Write-Log -Error "ERROR: Logparser not found on $pathToLogParserExe. Make sure you installed Logparser on this machine"
+    Write-Log -Error "ERROR: Logparser not found on $pathToLogParserExe. Specify the correct path to LogParser.exe, or Make sure you installed Logparser on this machine."
     exit
 }
 
 ################################ DO NOT CHANGE ##################################################
-$outExt = ".csv"
-Get-ChildItem $inputFile -Filter *.log | Foreach-Object {
+Get-ChildItem $inputFile -Filter *.log | Foreach-Object { # On initial script, $inputfile was a Folder path - here using a WPF OpenDialog box I specify a file (for now). Get-ChildItem will return that file only and I'm keeping the flexibility to add a Folder instead.
     $inFile = $_.FullName
     "Starting " + $inFile
     $outFile =  $_.FullName -replace "\.log",".csv"
